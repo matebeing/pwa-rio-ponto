@@ -108,6 +108,8 @@ type MarkerState = {
   velocidade: number; // km/h
   destino: string | null;
   linha: string;
+  /** Last GPS timestamp (epoch ms) — used to skip redundant WS updates */
+  lastDatahoraMs: number;
 };
 
 // ... (skipping unchanged code block manually, let's target specific lines)
@@ -297,6 +299,12 @@ const LayerManager = memo(function LayerManager({
 
       const existing = states.get(bus.ordem);
       if (existing) {
+        // SKIP if GPS timestamp hasn't changed — the WS is just re-sending cached data.
+        // This prevents resetting the animation/dead-reckoning to the same position.
+        if (bus.datahoraMs > 0 && bus.datahoraMs === existing.lastDatahoraMs) {
+          continue;
+        }
+
         const currentPos = existing.marker.getLatLng();
 
         // Calculate new heading based on actual API-to-API movement
@@ -347,6 +355,7 @@ const LayerManager = memo(function LayerManager({
         if (isMoving) existing.hasHeading = true;
         existing.startTime = now;
         existing.velocidade = bus.velocidade;
+        existing.lastDatahoraMs = bus.datahoraMs;
         existing.marker.setTooltipContent(buildTooltip(bus, existing.destino));
       } else {
         const iconHtml = `
@@ -397,6 +406,7 @@ const LayerManager = memo(function LayerManager({
           velocidade: bus.velocidade,
           linha: bus.linha,
           destino: null,
+          lastDatahoraMs: bus.datahoraMs,
         });
       }
     }

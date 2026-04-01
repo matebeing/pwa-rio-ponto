@@ -1,0 +1,3 @@
+/api/sppo/*  https://dados.mobilidade.rio/gps/sppo/:splat  200
+/api/sppo  https://dados.mobilidade.rio/gps/sppo  200
+/*  /index.html  200

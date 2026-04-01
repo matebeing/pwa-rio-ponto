@@ -12,7 +12,7 @@ export type Bus = {
   color: string;
 };
 
-const API_URL = '/api/sppo';
+const API_URL = 'https://api-sppo.onrender.com/buses';
 
 /** Max age of a GPS record to be considered 'fresh' - user explicitly requested 5 minutes max */
 const MAX_AGE_MS = 5 * 60 * 1000;

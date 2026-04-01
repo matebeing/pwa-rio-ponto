@@ -1,0 +1,625 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Rio No Ponto · Design System
+ * Inspired by iOS Human Interface Guidelines
+ *
+ * Emil Kowalski principles:
+ *   • Custom cubic-bezier easing (never ease-in for UI)
+ *   • :active scale(0.97) on all pressable elements
+ *   • Stagger animations on lists (30-80ms)
+ *   • Only animate transform & opacity
+ *   • prefers-reduced-motion support
+ *   • Hover gated behind (hover: hover) and (pointer: fine)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Tokens ─────────────────────────────────────────────────────────────── */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --dur-press: 100ms;
+  --dur-fast: 150ms;
+  --dur-normal: 220ms;
+  --dur-slow: 320ms;
+  --dur-sheet: 400ms;
+
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tab-bar-h: calc(52px + var(--safe-bottom));
+
+  /* ─── Dark (default) ─── */
+  --bg-base: #000000;
+  --bg-primary: #1c1c1e;
+  --bg-secondary: #2c2c2e;
+  --bg-tertiary: #3a3a3c;
+  --bg-elevated: rgba(28, 28, 30, 0.92);
+  --bg-blur: rgba(28, 28, 30, 0.78);
+  --fill-primary: rgba(255, 255, 255, 0.18);
+  --fill-secondary: rgba(255, 255, 255, 0.08);
+  --fill-tertiary: rgba(255, 255, 255, 0.04);
+  --separator: rgba(255, 255, 255, 0.08);
+  --text-1: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.60);
+  --text-3: rgba(255, 255, 255, 0.36);
+  --text-4: rgba(255, 255, 255, 0.18);
+  --tint: #6e5ce6;
+  --tint-text: #8b7cf6;
+  --tint-bg: rgba(110, 92, 230, 0.14);
+  --green: #30d158;
+  --green-bg: rgba(48, 209, 88, 0.12);
+  --blue: #0a84ff;
+  --blue-bg: rgba(10, 132, 255, 0.12);
+  --red: #ff453a;
+  --orange: #ff9f0a;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --blur: blur(24px);
+  --blur-heavy: blur(40px);
+}
+
+/* ─── Light ──────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+  --bg-base: #f2f2f7;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f2f2f7;
+  --bg-tertiary: #e5e5ea;
+  --bg-elevated: rgba(255, 255, 255, 0.88);
+  --bg-blur: rgba(249, 249, 249, 0.78);
+  --fill-primary: rgba(0, 0, 0, 0.12);
+  --fill-secondary: rgba(0, 0, 0, 0.06);
+  --fill-tertiary: rgba(0, 0, 0, 0.03);
+  --separator: rgba(0, 0, 0, 0.08);
+  --text-1: #000000;
+  --text-2: rgba(0, 0, 0, 0.55);
+  --text-3: rgba(0, 0, 0, 0.30);
+  --text-4: rgba(0, 0, 0, 0.16);
+  --tint: #5e4cc2;
+  --tint-text: #5e4cc2;
+  --tint-bg: rgba(94, 76, 194, 0.10);
+  --green: #34c759;
+  --green-bg: rgba(52, 199, 89, 0.10);
+  --blue: #007aff;
+  --blue-bg: rgba(0, 122, 255, 0.10);
+  --red: #ff3b30;
+  --orange: #ff9500;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --blur: blur(24px);
+  --blur-heavy: blur(40px);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  font-size: 16px;
+  background: var(--bg-base);
+  color: var(--text-1);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Bottom Tab Bar
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3000;
+  height: var(--tab-bar-h);
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur-heavy);
+  -webkit-backdrop-filter: var(--blur-heavy);
+  border-top: 0.5px solid var(--separator);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 6px;
+  padding-bottom: var(--safe-bottom);
+}
+
+.tab-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 4px 16px;
+  font-family: var(--font);
+  font-size: 0.62em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: transform var(--dur-press) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-bar-item:active {
+  transform: scale(0.90);
+}
+
+.tab-bar-item.active {
+  color: var(--tint);
+}
+
+.tab-bar-item svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Map Floating Action Buttons (FABs) — right side, above tab bar
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.map-fab-group {
+  position: absolute;
+  bottom: calc(var(--tab-bar-h) + 50px);
+  right: 16px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.map-fab {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--separator);
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-press) var(--ease-out),
+    background var(--dur-fast) ease;
+}
+
+.map-fab:active {
+  transform: scale(0.90);
+}
+
+.map-fab.active {
+  background: var(--tint-bg);
+  color: var(--tint);
+  border-color: rgba(110, 92, 230, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Follow Banner
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.follow-pill {
+  position: absolute;
+  bottom: calc(var(--tab-bar-h) + 72px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  color: var(--text-1);
+  font-size: 0.82em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  animation: pillIn 300ms var(--ease-out);
+}
+
+@keyframes pillIn {
+  from {
+    transform: translateX(-50%) translateY(10px) scale(0.96);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.follow-pill-stop {
+  background: var(--fill-primary);
+  border: none;
+  color: var(--text-1);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 0.82em;
+  font-family: var(--font);
+  font-weight: 500;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.follow-pill-stop:active {
+  transform: scale(0.92);
+}
+
+.follow-pill.risky {
+  border-color: rgba(255, 69, 58, 0.4);
+  background: rgba(80, 10, 10, 0.85);
+  color: #fff;
+}
+
+.follow-pill.risky .follow-pill-stop {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Staleness Badge
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.staleness-pill {
+  position: absolute;
+  bottom: calc(var(--tab-bar-h) + 16px);
+  left: 16px;
+  z-index: 1500;
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  color: var(--text-2);
+  font-size: 0.68em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: var(--shadow-sm);
+}
+
+.staleness-pill.stale {
+  border-color: rgba(255, 159, 10, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Bus Markers & Tooltips (map)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.bus-marker-container {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid;
+  transform-origin: center center;
+}
+
+.bus-marker-nose {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid;
+}
+
+.bus-custom-icon-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.bus-tooltip {
+  background: var(--bg-elevated) !important;
+  border: 0.5px solid var(--separator) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-1) !important;
+  box-shadow: var(--shadow-md) !important;
+  padding: 8px 14px !important;
+  backdrop-filter: var(--blur) !important;
+  font-family: var(--font) !important;
+  font-size: 13px !important;
+}
+
+.bus-tooltip::before {
+  border-top-color: var(--bg-elevated) !important;
+}
+
+.bus-tooltip--wide {
+  max-width: min(320px, 90vw) !important;
+}
+
+.user-location-marker {
+  animation: locPulse 2s ease infinite;
+}
+
+@keyframes locPulse {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(10, 132, 255, 0.5));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 12px rgba(10, 132, 255, 0.9));
+  }
+}
+
+.fc-alert-marker-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.fc-alert-marker {
+  width: 10px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.fc-alert-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(180, 72, 72, 0.88);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * PWA Install Banner
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.pwa-install-banner {
+  position: fixed;
+  bottom: calc(var(--tab-bar-h) + 16px);
+  left: 16px;
+  right: 16px;
+  z-index: 4000;
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-lg);
+  animation: sheetUp 400ms var(--ease-spring);
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pwa-install-banner__icon {
+  font-size: 1.6em;
+  flex-shrink: 0;
+}
+
+.pwa-install-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-banner__text strong {
+  font-size: 0.88em;
+  font-weight: 600;
+}
+
+.pwa-install-banner__text span {
+  font-size: 0.75em;
+  color: var(--text-3);
+}
+
+.pwa-install-banner__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-install-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 0.8em;
+  font-family: var(--font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.pwa-install-btn:active {
+  transform: scale(0.95);
+}
+
+.pwa-install-btn--primary {
+  background: var(--tint);
+  color: #fff;
+}
+
+.pwa-install-btn--dismiss {
+  background: var(--fill-secondary);
+  color: var(--text-2);
+}
+
+/* Toast */
+.push-toast {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 6000;
+  background: var(--bg-elevated);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  color: var(--text-1);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: var(--shadow-lg);
+  animation: sheetUp 300ms var(--ease-out);
+}
+
+.push-toast__content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.push-toast__content strong {
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.push-toast__content span {
+  font-size: 0.78em;
+  color: var(--text-2);
+}
+
+.push-toast__close {
+  background: var(--fill-secondary);
+  border: none;
+  color: var(--text-2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.7em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.push-toast__close:active {
+  transform: scale(0.85);
+}
+
+.notification-bell.active {
+  background: var(--tint-bg);
+  color: var(--tint);
+  border-color: rgba(110, 92, 230, 0.2);
+}
+
+.notification-bell.denied {
+  opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Shared Keyframes
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ 
+ * Desktop overrides
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+  .tab-bar {
+    display: none;
+  }
+
+  :root {
+    --tab-bar-h: 0px;
+  }
+
+  .staleness-pill {
+    bottom: 16px;
+  }
+
+  .map-fab-group {
+    bottom: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .staleness-pill {
+    display: none;
+  }
+}

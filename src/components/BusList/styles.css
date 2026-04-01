@@ -1,0 +1,229 @@
+/* BusList — iOS bottom sheet with refined cards */
+
+.bus-list-sheet {
+  position: absolute;
+  bottom: var(--tab-bar-h);
+  left: 0; right: 0;
+  z-index: 2500;
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur-heavy);
+  -webkit-backdrop-filter: var(--blur-heavy);
+  border-top: 0.5px solid var(--separator);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  transition: transform var(--dur-sheet) var(--ease-spring);
+  touch-action: none;
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Handle */
+.bus-list-handle-area {
+  padding: 8px 0 4px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bus-list-handle {
+  width: 36px; height: 5px;
+  background: var(--fill-primary);
+  border-radius: 3px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.bus-list-handle-area:active .bus-list-handle { transform: scaleX(1.4); }
+
+/* Header */
+.bus-list-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2px 20px 10px;
+  flex-shrink: 0;
+}
+
+.bus-list-title {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.bus-list-count {
+  font-size: 0.68em;
+  color: var(--text-3);
+  background: var(--fill-secondary);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+/* Tabs */
+.bus-list-tabs {
+  display: flex; gap: 0;
+  margin: 0 16px 8px;
+  background: var(--fill-secondary);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.bus-list-tab {
+  flex: 1;
+  padding: 7px 0;
+  border: none;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.72em;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  text-align: center;
+  transition: transform var(--dur-press) var(--ease-out),
+              background var(--dur-normal) ease,
+              color var(--dur-normal) ease;
+}
+
+.bus-list-tab:active { transform: scale(0.97); }
+
+.bus-list-tab.active {
+  background: var(--bg-primary);
+  color: var(--text-1);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Sort */
+.bus-list-sort {
+  display: flex; gap: 6px;
+  padding: 4px 16px 8px;
+  flex-shrink: 0;
+}
+
+.bus-list-sort-btn {
+  background: var(--fill-tertiary);
+  border: 0.5px solid var(--separator);
+  color: var(--text-3);
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.66em;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out),
+              background var(--dur-fast) ease,
+              color var(--dur-fast) ease;
+}
+
+.bus-list-sort-btn:active { transform: scale(0.93); }
+
+.bus-list-sort-btn.active {
+  background: var(--tint-bg);
+  border-color: rgba(110, 92, 230, 0.2);
+  color: var(--tint-text);
+}
+
+/* Scroll */
+.bus-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 12px 8px;
+}
+
+/* Item cards */
+.bus-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  background: var(--fill-tertiary);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out),
+              background var(--dur-fast) ease;
+  /* Stagger */
+  opacity: 0;
+  animation: fadeInUp 220ms var(--ease-out) forwards;
+}
+
+.bus-list-item:nth-child(1)  { animation-delay: 0ms; }
+.bus-list-item:nth-child(2)  { animation-delay: 30ms; }
+.bus-list-item:nth-child(3)  { animation-delay: 60ms; }
+.bus-list-item:nth-child(4)  { animation-delay: 90ms; }
+.bus-list-item:nth-child(5)  { animation-delay: 120ms; }
+.bus-list-item:nth-child(6)  { animation-delay: 150ms; }
+.bus-list-item:nth-child(7)  { animation-delay: 180ms; }
+.bus-list-item:nth-child(n+8) { animation-delay: 200ms; }
+
+.bus-list-item:active {
+  transform: scale(0.98);
+  background: var(--fill-secondary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bus-list-item:hover { background: var(--fill-secondary); }
+}
+
+.bus-list-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bus-list-item-info { flex: 1; min-width: 0; }
+
+.bus-list-item-line {
+  font-size: 0.88em;
+  font-weight: 700;
+}
+
+.bus-list-item-sub {
+  font-size: 0.68em;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bus-list-item-right { text-align: right; flex-shrink: 0; }
+
+.bus-list-item-speed {
+  font-size: 0.82em;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.bus-list-item-dist {
+  font-size: 0.66em;
+  color: var(--text-3);
+}
+
+.bus-list-item-eta {
+  font-size: 0.66em;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.bus-list-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.82em;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .bus-list-sheet {
+    position: absolute;
+    left: auto; right: 16px;
+    bottom: 16px; top: auto;
+    width: 340px;
+    max-height: 50vh;
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--separator);
+  }
+
+  .bus-list-handle-area { display: none; }
+}

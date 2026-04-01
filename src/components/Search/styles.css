@@ -1,0 +1,201 @@
+/* Search — iOS style compact bar */
+
+.search-bar-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2500;
+  margin-top: 5px;
+  padding: env(safe-area-inset-top, 12px) 14px 0;
+  pointer-events: none;
+}
+
+.search-bar-area>* {
+  pointer-events: auto;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  max-width: 400px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--dur-normal) ease;
+}
+
+.search-bar.focused {
+  border-color: var(--tint);
+}
+
+.search-bar-input {
+  background: none;
+  border: none;
+  color: var(--text-1);
+  font-size: 16px; /* Prevents auto-zoom on iOS */
+  font-family: var(--font);
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-bar-input::placeholder {
+  color: var(--text-4);
+}
+
+.search-bar-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--fill-primary);
+  border: none;
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.search-bar-clear:active {
+  transform: scale(0.85);
+}
+
+/* ─── Chips ──────────────────────────────────────────────────────────────── */
+
+.search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 400px;
+  margin: 8px auto 0;
+  padding: 0 2px;
+}
+
+.search-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg-blur);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  color: var(--chip-color, var(--text-1));
+  font-size: 0.75em;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-chip:active {
+  transform: scale(0.93);
+}
+
+.search-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── Results Dropdown ───────────────────────────────────────────────────── */
+
+.search-results {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 12px) + 52px);
+  left: 14px;
+  right: 14px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: var(--bg-elevated);
+  backdrop-filter: var(--blur);
+  border: 0.5px solid var(--separator);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 260px;
+  overflow-y: auto;
+  animation: dropIn 200ms var(--ease-out);
+  transform-origin: top center;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.search-results-hint {
+  padding: 8px 16px;
+  font-size: 0.68em;
+  color: var(--text-3);
+  border-bottom: 0.5px solid var(--separator);
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  border-bottom: 0.5px solid var(--separator);
+  background: none;
+  color: var(--text-1);
+  font-size: 0.88em;
+  font-family: var(--font);
+  cursor: pointer;
+  text-align: left;
+  /* Stagger */
+  opacity: 0;
+  animation: fadeInUp 200ms var(--ease-out) forwards;
+  transition: transform var(--dur-press) var(--ease-out),
+    background var(--dur-fast) ease;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:active {
+  transform: scale(0.98);
+  background: var(--fill-secondary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search-result-item:hover {
+    background: var(--fill-tertiary);
+  }
+}
+
+.search-result-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.search-result-icon {
+  font-size: 1.05em;
+}
+
+.search-results-empty {
+  padding: 20px 16px;
+  color: var(--text-3);
+  font-size: 0.82em;
+  text-align: center;
+}

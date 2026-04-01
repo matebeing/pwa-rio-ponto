@@ -136,6 +136,8 @@ export function useBus(isActive: boolean = true): BusDataInfo {
   });
 
   const lineColorsRef = useRef<globalThis.Map<string, string>>(new globalThis.Map());
+  // Persist last good data so reconnects/re-mounts don't flash empty
+  const lastGoodRef = useRef<BusDataInfo | null>(null);
 
   useEffect(() => {
     if (!isActive) return;
@@ -146,13 +148,24 @@ export function useBus(isActive: boolean = true): BusDataInfo {
     let wsFailCount = 0;
     let httpFallbackTimer: number | null = null;
 
+    // If we have persisted data from a previous connection, restore it immediately
+    if (lastGoodRef.current && lastGoodRef.current.buses.length > 0) {
+      setInfo(lastGoodRef.current);
+    }
+
     function updateState(raw: RawBus[]) {
       if (!mounted) return;
       const result = processRawBuses(raw, lineColorsRef.current);
-      setInfo({
+      // Only update if we actually got buses — never overwrite with empty
+      if (result.buses.length === 0 && lastGoodRef.current && lastGoodRef.current.buses.length > 0) {
+        return;
+      }
+      const newInfo: BusDataInfo = {
         ...result,
         lastFetchedAt: Date.now(),
-      });
+      };
+      lastGoodRef.current = newInfo;
+      setInfo(newInfo);
     }
 
     // ── WebSocket ──
@@ -184,6 +197,7 @@ export function useBus(isActive: boolean = true): BusDataInfo {
             raw = JSON.parse(event.data);
           }
 
+          // Update immediately as soon as data is parsed
           updateState(raw);
         } catch (err) {
           console.error('[SPPO] Erro ao processar mensagem WS:', err);
@@ -195,6 +209,7 @@ export function useBus(isActive: boolean = true): BusDataInfo {
       };
 
       ws.onclose = () => {
+        // NEVER clear bus data on disconnect — keep last known positions
         if (!mounted) return;
         wsFailCount++;
         console.log(`[SPPO] WebSocket desconectado (tentativa ${wsFailCount})`);
@@ -223,6 +238,7 @@ export function useBus(isActive: boolean = true): BusDataInfo {
 
         if (res.ok && mounted) {
           const raw: RawBus[] = await res.json();
+          // Update immediately as soon as data is parsed
           updateState(raw);
         }
       } catch (err) {
@@ -255,3 +271,4 @@ export function useBus(isActive: boolean = true): BusDataInfo {
 
   return info;
 }
+

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { Bus } from '../../hooks/useBus';
 import type { UserLocation } from '../../hooks/useUserLocation';
 import { haversineMeters, formatDistance, formatTimeAgo, estimateETA } from '../../utils/geo';

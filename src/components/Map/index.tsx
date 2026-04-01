@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, memo, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import html2canvas from 'html2canvas';
 import { useMap, TileLayer, MapContainer } from 'react-leaflet';
 import L from 'leaflet';

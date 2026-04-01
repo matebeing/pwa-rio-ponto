@@ -1,4 +1,6 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { type MapHandle } from '../../components/Map';
+import { shareBus } from '../../utils/share';
 import Details from '../../components/Details';
 import BusMap from '../../components/Map';
 import Search from '../../components/Search';
@@ -230,6 +232,7 @@ const Home = () => {
 
       {/* Map — always rendered */}
       <BusMap
+        ref={mapRef}
         buses={mapBuses}
         selectedLines={mapLines}
         lineColorMap={lineColorMap}
@@ -280,6 +283,7 @@ const Home = () => {
           isFollowing={followedOrdem === liveBus.ordem}
           onFollow={handleInfoFollow}
           onClose={handleInfoClose}
+          onShareScreenshot={handleShareScreenshot}
         />
       )}
 

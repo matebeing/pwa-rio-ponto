@@ -22,12 +22,30 @@ export function buildShareText(bus: Bus): string {
 }
 
 /** Share bus info — uses Web Share API with WhatsApp fallback */
-export async function shareBus(bus: Bus): Promise<void> {
+export async function shareBus(bus: Bus, screenshot?: File): Promise<void> {
   const text = buildShareText(bus);
+
+  const shareData: ShareData = {
+    title: `Ônibus ${bus.linha}`,
+    text,
+    url: window.location.origin
+  };
+
+  if (screenshot && navigator.canShare) {
+    const shareWithFile = { ...shareData, files: [screenshot] };
+    if (navigator.canShare(shareWithFile)) {
+      try {
+        await navigator.share(shareWithFile);
+        return;
+      } catch {
+        // fallback to standard share
+      }
+    }
+  }
 
   if (navigator.share) {
     try {
-      await navigator.share({ title: `Ônibus ${bus.linha}`, text });
+      await navigator.share(shareData);
       return;
     } catch {
       // user cancelled or API failed — fall through to WhatsApp

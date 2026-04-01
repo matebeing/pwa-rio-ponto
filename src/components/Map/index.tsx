@@ -1,4 +1,5 @@
-import { useEffect, useRef, memo, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, memo, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
+import html2canvas from 'html2canvas';
 import { useMap, TileLayer, MapContainer } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,6 +17,10 @@ import busSignIconUrl from '../../assets/bus_sign.svg';
 import { IconLocate, IconBusStop, IconX } from '../Icons';
 import NotificationBell from '../NotificationBell';
 import type { PushToast } from '../../hooks/usePushNotifications';
+
+export type MapHandle = {
+  takeScreenshot: () => Promise<File | null>;
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -717,7 +722,7 @@ type MapProps = {
   onClearToast?: () => void;
 };
 
-const BusMap = memo(function BusMap({
+const BusMap = memo(forwardRef<MapHandle, MapProps>(function BusMap({
   buses = [],
   selectedLines = [],
   lineColorMap = new globalThis.Map(),
@@ -738,7 +743,7 @@ const BusMap = memo(function BusMap({
   onRequestPushPermission,
   toastMessage = null,
   onClearToast,
-}: MapProps) {
+}, ref) {
   const followedBus = followedOrdem ? buses.find((b) => b.ordem === followedOrdem) : null;
 
   const linesForItinerary = useMemo(() => {
@@ -763,12 +768,44 @@ const BusMap = memo(function BusMap({
   const mapIsRisky = showRouteAlerts && isRisky;
   const mapOccurrences = showRouteAlerts ? occurrences : [];
 
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    takeScreenshot: async () => {
+      if (!mapContainerRef.current) return null;
+      try {
+        const controls = mapContainerRef.current.querySelectorAll('.leaflet-control-container, .map-fab-group, .follow-pill');
+        controls.forEach((c) => { (c as HTMLElement).style.display = 'none'; });
+        
+        const canvas = await html2canvas(mapContainerRef.current, {
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#f8f9fa',
+          scale: 2,
+          logging: false,
+        });
+        
+        controls.forEach((c) => { (c as HTMLElement).style.display = ''; });
+
+        return new Promise<File | null>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (!blob) resolve(null);
+            else resolve(new File([blob], `rio-no-ponto-${Date.now()}.png`, { type: 'image/png' }));
+          }, 'image/png');
+        });
+      } catch (err) {
+        console.error('Screenshot error:', err);
+        return null;
+      }
+    }
+  }));
+
   return (
-    <>
+    <div ref={mapContainerRef} style={{ height: '100vh', width: '100vw', position: 'relative' }}>
       <MapContainer
         center={[-22.9068, -43.1729]}
         zoom={13}
-        style={{ height: '100vh', width: '100vw' }}
+        style={{ height: '100%', width: '100%' }}
         zoomControl={false}
       >
         <TileLayer
@@ -835,8 +872,8 @@ const BusMap = memo(function BusMap({
           </button>
         </div>
       )}
-    </>
+    </div>
   );
-});
+}));
 
 export default BusMap;

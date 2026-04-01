@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import type { Bus } from '../../hooks/useBus';
 import type { UserLocation } from '../../hooks/useUserLocation';
 import { haversineMeters, formatDistance, formatTimeAgo, estimateETA } from '../../utils/geo';
@@ -12,14 +12,15 @@ type BusInfoPanelProps = {
   isFollowing: boolean;
   onFollow: () => void;
   onClose: () => void;
+  onShareScreenshot?: (bus: Bus) => void;
 };
-
 const BusInfoPanel = memo(function BusInfoPanel({
   bus,
   userLocation,
   isFollowing,
   onFollow,
   onClose,
+  onShareScreenshot,
 }: BusInfoPanelProps) {
   const distance = userLocation
     ? haversineMeters(userLocation.lat, userLocation.lng, bus.latitude, bus.longitude)
@@ -97,7 +98,7 @@ const BusInfoPanel = memo(function BusInfoPanel({
           </button>
           <button
             className="bus-info-btn bus-info-btn-share"
-            onClick={() => shareBus(bus)}
+            onClick={() => onShareScreenshot ? onShareScreenshot(bus) : shareBus(bus)}
           >
             <IconShare size={16} />
             Compartilhar

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Details from '../../components/Details';
 import BusMap from '../../components/Map';
 import Search from '../../components/Search';
@@ -163,6 +163,17 @@ const Home = () => {
   }, [liveBus]);
 
   const handleInfoClose = useCallback(() => setSelectedBus(null), []);
+
+  const mapRef = useRef<MapHandle>(null);
+
+  const handleShareScreenshot = useCallback(async (bus: Bus) => {
+    let file: File | undefined = undefined;
+    if (mapRef.current) {
+      const f = await mapRef.current.takeScreenshot();
+      if (f) file = f;
+    }
+    await shareBus(bus, file);
+  }, []);
 
   const handleSearchOrdem = useCallback((ordem: string | null) => {
     setFollowedOrdem(null);
